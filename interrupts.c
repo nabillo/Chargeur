@@ -3,6 +3,8 @@
 /******************************************************************************/
 
 #include <xc.h>         /* XC8 General Include File */
+#include "usb_config.h"
+#include <usb/usb.h>
 
 extern unsigned short timeout;
 extern long seconds;
@@ -15,6 +17,7 @@ extern long seconds;
 
 void interrupt high_isr(void)
 {
+/*
     if (TMR2IE && TMR2IF)
     {
 #asm
@@ -27,5 +30,8 @@ void interrupt high_isr(void)
             timeout--;
         }
     }
-
+*/
+    #if defined(USB_INTERRUPT)
+        USBDeviceTasks();
+    #endif
 }

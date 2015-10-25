@@ -1,48 +1,31 @@
-/******************************************************************************/
-/* Files to Include                                                           */
-/******************************************************************************/
+/*********************************************************************
+ *
+ *                USB Firmware PicDem (FS) USB with 4550 specific
+ *
+ *********************************************************************
+ * FileName:        pdfsusb_4550_hid.c
+ * Dependencies:    See INCLUDES section below
+ * Processor:       PIC18F4550
+ * Compiler:        C18 3.40+
+ * Company:         HS-Ulm
+ *
+ * Author       Company     Date        Comment
+ *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * VSK          HS-Ulm      29.09.10
+ *                          02.10.13   
+ *
+ *		TODO
+ *
+ *		-	...
+ *
+ ******************************************************************************/
 
-#include <xc.h>         /* XC8 General Include File */
+#include "system.h"
+//#include <USB/usb.h>
+//#include <USB/usb_device_hid.h>
+//#include <adc.h>
 
-/******************************************************************************/
-/* Configuration Bits                                                         */
-/*                                                                            */
-/* Refer to 'HI-TECH PICC and PICC18 Toolchains > PICC18 Configuration        */
-/* Settings' under Help > Contents in MPLAB X IDE for available PIC18         */
-/* Configuration Bit Settings for the correct macros when using the C18       */
-/* compiler.  When using the Hi-Tech PICC18 compiler, refer to the compiler   */
-/* manual.pdf in the compiler installation doc directory section on           */
-/* 'Configuration Fuses'.  The device header file in the HiTech PICC18        */
-/* compiler installation directory contains the available macros to be        */
-/* embedded.  The XC8 compiler contains documentation on the configuration    */
-/* bit macros within the compiler installation /docs folder in a file called  */
-/* pic18_chipinfo.html.                                                       */
-/*                                                                            */
-/* For additional information about what the hardware configurations mean in  */
-/* terms of device operation, refer to the device datasheet.                  */
-/*                                                                            */
-/* General C18/XC8 syntax for configuration macros:                           */
-/* #pragma config <Macro Name>=<Setting>, <Macro Name>=<Setting>, ...         */
-/*                                                                            */
-/* General HiTech PICC18 syntax:                                              */
-/* __CONFIG(n,x);                                                             */
-/*                                                                            */
-/* n is the config word number and x represents the anded macros from the     */
-/* device header file in the PICC18 compiler installation include directory.  */
-/*                                                                            */
-/* A feature of MPLAB X is the 'Generate Source Code to Output' utility in    */
-/* the Configuration Bits window.  Under Window > PIC Memory Views >          */
-/* Configuration Bits, a user controllable configuration bits window is       */
-/* available to Generate Configuration Bits source code which the user can    */
-/* paste into this project.                                                   */
-/*                                                                            */
-/******************************************************************************/
-
-
-
-// #pragma config statements should precede project file includes.
-// Use project enums instead of #define for ON and OFF.
-
+/** CONFIGURATION **************************************************/
 // CONFIG1L
 #pragma config PLLDIV = 5       // PLL Prescaler Selection bits (Divide by 5 (20 MHz oscillator input))
 #pragma config CPUDIV = OSC1_PLL2// System Clock Postscaler Selection bits ([Primary Oscillator Src: /1][96 MHz PLL Src: /2])
@@ -65,7 +48,7 @@
 
 // CONFIG3H
 #pragma config CCP2MX = OFF     // CCP2 MUX bit (CCP2 input/output is multiplexed with RB3)
-#pragma config PBADEN = ON      // PORTB A/D Enable bit (PORTB<4:0> pins are configured as analog input channels on Reset)
+#pragma config PBADEN = OFF      // PORTB A/D Enable bit (PORTB<4:0> pins are configured as analog input channels on Reset)
 #pragma config LPT1OSC = OFF    // Low-Power Timer 1 Oscillator Enable bit (Timer1 configured for higher power operation)
 #pragma config MCLRE = ON       // MCLR Pin Enable bit (MCLR pin enabled; RE3 input pin disabled)
 
@@ -104,3 +87,42 @@
 // CONFIG7H
 #pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot block (000000-0007FFh) is not protected from table reads executed in other blocks)
 
+/******************************************************************************
+ * Function:        void initADC(void)
+ *
+ * PreCondition:    None
+ * Input:           None
+ * Output:          None
+ * Side Effects:    None
+ *
+ * Overview:
+ *
+ * Note:
+ *
+ *****************************************************************************/
+void initADC(void)
+{
+    OpenADC(ADC_FOSC_64 & ADC_RIGHT_JUST & ADC_2_TAD,
+            ADC_CH0 & ADC_INT_OFF & ADC_REF_VDD_VSS,
+            ADC_1ANA);
+}
+
+/******************************************************************************
+ * Function:        void initSpecialEventTrigger(void)
+ *
+ * PreCondition:    None
+ * Input:           None
+ * Output:          None
+ * Side Effects:    None
+ *
+ * Overview:
+ *
+ * Note:
+ *
+ *****************************************************************************/
+void initSpecialEventTrigger(void)
+{
+
+}
+
+/** EOF pdfsusb_4550_hid.c *************************************************/

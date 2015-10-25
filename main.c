@@ -6,10 +6,13 @@
 #include <stdint.h>        /* For uint8_t definition */
 #include <stdbool.h>       /* For true/false definition */
 #include <string.h>
+#include <usb/usb.h>
+#include <usb/usb_device_cdc.h>
 
 #include "system.h"
 #include "user.h"
 #include "battery.h"
+#include "usb_comm.h"
 
 /******************************************************************************/
 /* User Global Variable Declaration                                           */
@@ -27,6 +30,79 @@ tPIParams PI; // Data Structure for PI controller
 unsigned short timeout;
 long seconds;
 
+/*******************************************************************
+ * Function:        BOOL USER_USB_CALLBACK_EVENT_HANDLER(
+ *                        USB_EVENT event, void *pdata, WORD size)
+ *
+ * PreCondition:    None
+ *
+ * Input:           USB_EVENT event - the type of event
+ *                  void *pdata - pointer to the event data
+ *                  WORD size - size of the event data
+ *
+ * Output:          None
+ *
+ * Side Effects:    None
+ *
+ * Overview:        This function is called from the USB stack to
+ *                  notify a user application that a USB event
+ *                  occured.  This callback is in interrupt context
+ *                  when the USB_INTERRUPT option is selected.
+ *
+ * Note:            None
+ *******************************************************************/
+bool USER_USB_CALLBACK_EVENT_HANDLER(USB_EVENT event, void *pdata, uint16_t size)
+{
+    switch(event)
+    {
+        case EVENT_TRANSFER:
+            //Add application specific callback task or callback function here if desired.
+            break;
+        case EVENT_SOF:
+            /* We are using the SOF as a timer to time the LED indicator.  Call
+             * the LED update function here. */
+//new MLA           APP_LEDUpdateUSBStatus();
+            break;
+        case EVENT_SUSPEND:
+            /* Update the LED status for the suspend event. */
+//new MLA            APP_LEDUpdateUSBStatus();
+            break;
+        case EVENT_RESUME:
+            /* Update the LED status for the resume event. */
+//new MLA            APP_LEDUpdateUSBStatus();
+            break;
+        case EVENT_CONFIGURED:
+            /* When the device is configured, we can (re)initialize the demo
+             * code. */
+//old MLA            USBCBInitEP();
+            APP_CustomCDCInitialize();
+            break;
+        case EVENT_SET_DESCRIPTOR:
+//            APP_USBCBStdSetDscHandler();
+            break;
+        case EVENT_EP0_REQUEST:
+            /* We have received a non-standard USB request.  The CDC driver
+             * needs to check to see if the request was for it. */
+//            APP_USBCBCheckOtherReq();
+            USBCheckCDCRequest();
+            break;
+        case EVENT_BUS_ERROR:
+            break;
+        case EVENT_TRANSFER_TERMINATED:
+            //Add application specific callback task or callback function here if desired.
+            //The EVENT_TRANSFER_TERMINATED event occurs when the host performs a CLEAR
+            //FEATURE (endpoint halt) request on an application endpoint which was
+            //previously armed (UOWN was = 1).  Here would be a good place to:
+            //1.  Determine which endpoint the transaction that just got terminated was
+            //      on, by checking the handle value in the *pdata.
+            //2.  Re-arm the endpoint if desired (typically would be the case for OUT
+            //      endpoints).
+            break;
+        default:
+            break;
+    }
+    return true;
+}
 
 /******************************************************************************/
 /* Main Program                                                               */
@@ -39,14 +115,13 @@ void main(void)
     char end[10];
     char msg_Error[100];
 
-    /* Configure the oscillator for the device */
-    ConfigureOscillator();
-
     /* Initialize
      *  I/O and Peripherals for application */
     InitApp();
 
-    while(1)
+    //usb_send("%s","Application initialized");
+
+    while(0)
     {
         res = INDEFINED;
         switch (cur_State)
@@ -357,4 +432,5 @@ void main(void)
     }
 
 }
+
 

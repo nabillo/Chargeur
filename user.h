@@ -101,4 +101,4 @@ short list_Program(void);
 void select_Program(void);
 unsigned int calc_Time(long initial);
 short check_Lipo(void);
-
+void usb_send(const char *format, ...);

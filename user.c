@@ -8,6 +8,8 @@
 #include <adc.h>
 #include <string.h>
 #include <timers.h>
+#include <usb/usb.h>
+#include <usb/usb_device_cdc.h>
 
 
 #include "user.h"
@@ -20,6 +22,7 @@ extern unsigned short long precondition_Time;
 extern unsigned short long charge_Time;
 extern unsigned short timeout;
 extern long seconds;
+
 
 /******************************************************************************/
 /* User Functions                                                             */
@@ -65,7 +68,12 @@ void InitApp(void)
                 T1_OSC1EN_ON &
                 T1_SYNC_EXT_OFF );
 
-    ei();
+    //ei();
+
+    USBDeviceInit();            //usb_device.c
+    #if defined(USB_INTERRUPT)
+      USBDeviceAttach();        //usb_device.c
+    #endif
 
     /* TODO init PI structure */
     PI.Ki = 2;
@@ -89,7 +97,7 @@ short V_Eval(unsigned char channel,signed float *voltage)
     }
 
     temp = ReadADC();
-    *voltage = (temp / 1023.0) * 5.0;
+    *voltage = (temp / 1024.0) * 5.0;
     
     return OK;
 }
@@ -237,6 +245,8 @@ short check_Precondition(short *precondition)
     {
         *precondition = false;
     }
+
+    usb_send("voltage : %f, precondition : %hd",voltage,precondition);
 
     return OK;
 }
